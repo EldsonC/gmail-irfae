@@ -9,7 +9,7 @@ const port = 3001; // Escolha uma porta disponível
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post('/api/send-email', async (req, res) => {
+app.post('/send-email', async (req, res) => {
   const { fullName, email, whatsapp } = req.body;
 
   // Configuração do Nodemailer (substitua com suas próprias credenciais)
