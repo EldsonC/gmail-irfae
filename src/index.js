@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const SMTP_CONFIG = require("./config/smtp");
 const app = express();
-const port = 3001; // Escolha uma porta disponível
+const PORT = process.env.PORT || 3001; // Escolha uma porta disponível
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -42,6 +42,6 @@ app.post('/send-email', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
