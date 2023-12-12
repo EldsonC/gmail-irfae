@@ -4,13 +4,26 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const SMTP_CONFIG = require("./config/smtp");
 const app = express();
-const PORT = process.env.PORT || 3001; // Escolha uma porta disponível
+const PORT = process.env.PORT || 3000; // Escolha uma porta disponível
+const fs = require('fs');
 
 app.use(cors());
 app.use(bodyParser.json());
 
 app.post('/send-email', async (req, res) => {
   const { fullName, email, whatsapp } = req.body;
+
+  // Leitura do arquivo HTML
+  let htmlContent = fs.readFileSync('./src/index.html', 'utf-8');
+  let htmlirfae = fs.readFileSync('./src/irfae.html', 'utf-8');
+
+  htmlContent = htmlContent.replace('[Nome Completo]', fullName);
+  htmlContent = htmlContent.replace('[Endereço de E-mail]', email);
+  htmlContent = htmlContent.replace('[Número de Telefone]', whatsapp);
+
+  htmlirfae = htmlirfae.replace('[Nome Completo]', fullName);
+  htmlirfae = htmlirfae.replace('[Endereço de E-mail]', email);
+  htmlirfae = htmlirfae.replace('[Número de Telefone]', whatsapp);
 
   // Configuração do Nodemailer (substitua com suas próprias credenciais)
   const transporter = nodemailer.createTransport({
@@ -24,16 +37,26 @@ app.post('/send-email', async (req, res) => {
   });
 
   // Configuração do email
-  const mailOptions = {
-    from: 'eldson.caldasw@gmail.com',
-    to: ['eldson.caldasw@gmail.com', 'ivysoftwares@gmail.com'], // Substitua com o seu e-mail institucional
-    subject: 'Novo formulário de contato',
-    html: `<p>Nome: ${fullName}</p><p>Email: ${email}</p><p>Whatsapp: ${whatsapp}</p>`,
+  const mailCliente = {
+    from: ``,
+    to: [`${email}`], // Substitua com o seu e-mail institucional
+    subject: `(IRFAE) ${fullName} quer conhecer mais!`,
+    html: htmlContent,
+    
+  };
+
+  const mailIRFAE = {
+    from: ``,
+    to: ['ivysoftwares@gmail.com'], // Substitua com o seu e-mail institucional
+    subject: `(IRFAE) ${fullName} quer conhecer mais!`,
+    html: htmlirfae,
+    
   };
 
   try {
     // Envia o e-mail
-    await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailCliente);
+    await transporter.sendMail(mailIRFAE);
     console.log('E-mail enviado com sucesso!');
     res.status(200).json({ message: 'Formulário enviado com sucesso!' });
   } catch (error) {
